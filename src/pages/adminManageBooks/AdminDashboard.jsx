@@ -5,12 +5,15 @@ import { useEffect, useState } from 'react'
 import { getAllIssues } from '../../api/issues' // API function to fetch all issued books
 import IssuedBooksTable from './issuedBooksTable'; // Component to display issued books
 import ReturnRequestsTable from './returnRequestsTable'; // Component to display return requests
+import SkeletonLoader from "../../components/common/skeletonLoader"; // Import the reusable skeleton loader
 
 export default function AdminDashboard() {
     // State to store all issued books and return requests fetched from the backend
     const [allIssuesBooks, setAllIssuesBooks] = useState([]);
     // State to manage the currently active tab ('issued' or 'requests')
     const [activeTab, setActiveTab] = useState('issued');
+    // State to track loading while fetching data
+    const [loading, setLoading] = useState(true);
 
     // Asynchronous function to fetch all issued books and return requests from the API
     async function issuedBooks() {
@@ -19,6 +22,8 @@ export default function AdminDashboard() {
             setAllIssuesBooks(res.data || []); // Update state with fetched data, default to empty array if null
         } catch (err) {
             console.log(err); // Log any errors during fetching
+        } finally {
+            setLoading(false); // Stop loading once fetch completes
         }
     }
 
@@ -33,6 +38,24 @@ export default function AdminDashboard() {
     const overdueList = allIssuesBooks.filter((book) =>( book.fine > 0));
     console.log(overdueList);
     
+    // Show skeleton loader while fetching data
+    if (loading) {
+        return (
+            // Main container for the admin dashboard (forced dark theme)
+            <div className="bg-gray-900 text-white min-h-screen font-sans">
+                <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+                    {/* Skeleton for statistics cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        <SkeletonLoader type="card" count={3} />
+                    </div>
+                    {/* Skeleton for tab content */}
+                    <div className="bg-gray-800 shadow-lg rounded-lg p-4 sm:p-6 border border-gray-700">
+                        <SkeletonLoader type="card" count={1} />
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     return (
         // Main container for the admin dashboard (forced dark theme)
