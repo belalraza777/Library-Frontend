@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:4000/api/issues";
+const API_BASE_URL = "https://library-backend-wib5.onrender.com/api/issues";
 
 const axiosInstance = axios.create({
     baseURL: API_BASE_URL,
