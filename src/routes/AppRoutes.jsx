@@ -7,7 +7,7 @@ import HomePage from "../pages/HomePage";
 import BookDetailsPage from "../pages/BookDetailsPage";
 import Login from "../pages/users/login";
 import Signup from "../pages/users/signup";
-import AdminPanel from "../pages/adminManageBooks/adminPanel";
+import AdminPanel from "../pages/adminManageBooks/AdminPanel";
 import AdminDashboard from "../pages/adminManageBooks/AdminDashboard";
 import UserDashboard from "../pages/userManagement/UserDashboard";
 import Unknown from "../components/common/unknown";
