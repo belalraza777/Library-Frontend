@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/authContext"; // Imports the authentication context
 import { toast } from 'react-toastify';
+import Loader from "../../components/common/loader";
+
 
 export default function Login() {
   const navigate = useNavigate(); // Hook to programmatically navigate
@@ -100,9 +102,9 @@ export default function Login() {
               className={`px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900 ${loading ? "opacity-50 cursor-not-allowed" : ""
                 }`}
             >
-              {loading ? "Loading..." : "Login"}
+              {loading ? <Loader /> : "Login"}
             </button>
-            
+
           </div>
 
           {/* Signup */}

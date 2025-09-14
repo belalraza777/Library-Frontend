@@ -6,11 +6,13 @@ import Swal from "sweetalert2";
 import { getAllBooks, addNewBook, updateBook, deleteBook } from "../../api/books"; // API functions for book operations
 import BookTable from "./bookTable"; // Table component to display the list of books
 import BookFormModal from "./BookFormModal"; // Modal component to wrap the BookForm for better UX
+import SkeletonLoader from "../../components/common/skeletonLoader"; // Import the reusable skeleton loader
 
 export default function AdminPanel() {
+
   // State to hold the list of all books fetched from the backend
   const [books, setBooks] = useState([]);
-
+  const [loading, setLoading] = useState(true);
   // State for form input data, used for both adding new books and updating existing ones
   const [form, setForm] = useState({
     title: "",
@@ -30,8 +32,15 @@ export default function AdminPanel() {
 
   // Asynchronous function to fetch all books from the backend API
   async function fetchBooks() {
-    const res = await getAllBooks();
-    if (res.success) setBooks(res.data); // Update the books state if the API call is successful
+    try {
+      const res = await getAllBooks();
+      if (res.success) setBooks(res.data); // Update the books state if the API call is successful
+    }
+    catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   // useEffect hook to fetch books when the component mounts
@@ -68,28 +77,28 @@ export default function AdminPanel() {
   }
 
   // Handles the deletion of a book by its ID
- async function handleDelete(id) {
-  const result = await Swal.fire({
-    title: "Are you sure?",
-    text: "This action will permanently delete the book.",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#d33",
-    cancelButtonColor: "#3085d6",
-    confirmButtonText: "Yes, delete it!",
-    cancelButtonText: "Cancel",
-  });
+  async function handleDelete(id) {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This action will permanently delete the book.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
 
-  if (result.isConfirmed) {
-    try {
-      await deleteBook(id);
-      fetchBooks(); // Refresh the book list
-      Swal.fire("Deleted!", "The book has been deleted.", "success");
-    } catch (error) {
-      Swal.fire("Error", "Something went wrong while deleting.", "error");
+    if (result.isConfirmed) {
+      try {
+        await deleteBook(id);
+        fetchBooks(); // Refresh the book list
+        Swal.fire("Deleted!", "The book has been deleted.", "success");
+      } catch (error) {
+        Swal.fire("Error", "Something went wrong while deleting.", "error");
+      }
     }
   }
-}
 
   // Fills the form with selected book data and opens the modal for editing
   function handleEdit(book) {
@@ -138,6 +147,26 @@ export default function AdminPanel() {
       image: "",
     });
   };
+
+  // Show skeleton loader while fetching data
+  if (loading) {
+    return (
+      // Main container for the admin dashboard (forced dark theme)
+      <div className="bg-gray-900 text-white min-h-screen font-sans">
+        <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+          {/* Skeleton for statistics cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <SkeletonLoader type="card" count={3} />
+          </div>
+          {/* Skeleton for tab content */}
+          <div className="bg-gray-800 shadow-lg rounded-lg p-4 sm:p-6 border border-gray-700">
+            <SkeletonLoader type="card" count={1} />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
 
   return (
     // Main container for the admin panel with styling for background, minimum height, and padding

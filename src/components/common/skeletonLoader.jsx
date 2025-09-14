@@ -31,6 +31,29 @@ export default function SkeletonLoader({ type = "card", count = 1 }) {
     </div>
   );
 
+  // Landing / Home page skeleton
+  const LandingSkeleton = () => (
+    <div className="space-y-6">
+      {/* Hero section */}
+      <div className="bg-gray-800 rounded-lg p-6 shadow-md">
+        <Skeleton height={40} width="60%" baseColor={baseColor} highlightColor={highlightColor} className="mb-4" />
+        <Skeleton height={20} width="80%" baseColor={baseColor} highlightColor={highlightColor} className="mb-2" />
+        <Skeleton height={20} width="70%" baseColor={baseColor} highlightColor={highlightColor} />
+      </div>
+
+      {/* Features */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="bg-gray-800 p-4 rounded-lg shadow">
+            <Skeleton circle height={60} width={60} baseColor={baseColor} highlightColor={highlightColor} className="mb-4" />
+            <Skeleton height={20} width="70%" baseColor={baseColor} highlightColor={highlightColor} className="mb-2" />
+            <Skeleton height={15} width="90%" baseColor={baseColor} highlightColor={highlightColor} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   if (type === "card") {
     return (
       <>
@@ -43,6 +66,10 @@ export default function SkeletonLoader({ type = "card", count = 1 }) {
 
   if (type === "details") {
     return <DetailsSkeleton />;
+  }
+
+  if (type === "landing") {
+    return <LandingSkeleton />;
   }
 
   // Default simple line skeleton

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { getMyBooks } from '../../api/issues'; // API function to fetch user's issued books
 import CurrentBooks from '../userManagement/currBook'; // Component to display currently borrowed books
 import ReturnedBooks from '../userManagement/returnedBook'; // Component to display previously returned books
+import SkeletonLoader from "../../components/common/skeletonLoader"; // Import the reusable skeleton loader
 
 export default function UserDashboard() {
   // State to store books currently borrowed by the user
@@ -14,17 +15,21 @@ export default function UserDashboard() {
   // State to manage the active tab, either 'current' (for current books) or 'returned' (for returned books)
   const [activeTab, setActiveTab] = useState('current');
 
+  const [loading, setLoading] = useState(true);
+
   // Asynchronous function to fetch all books issued to the current user
   async function getIssuedBooks() {
     try {
       const res = await getMyBooks(); // Call the API to get user's books
       const books = res.data || []; // Ensure books is an array, even if API returns null/undefined
-      
+
       // Filter fetched books into two categories: currently borrowed and returned
       setCurrBooks(books.filter((book) => !book.returnAccept)); // Books not yet returned
       setReturnedBooks(books.filter((book) => book.returnAccept)); // Books that have been returned
     } catch (error) {
       console.error("Failed to fetch books:", error); // Log any errors during fetching
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -32,6 +37,30 @@ export default function UserDashboard() {
   useEffect(() => {
     getIssuedBooks();
   }, []); // Empty dependency array ensures this runs only once on mount
+
+
+  // Show skeleton loader while fetching data
+  if (loading) {
+    return (
+      // Main container for the admin dashboard (forced dark theme)
+      <div className="bg-gray-900 text-white min-h-screen font-sans">
+        <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+          {/* Skeleton for statistics cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <SkeletonLoader type="detail" count={3} />
+          </div>
+          {/* Skeleton for statistics cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <SkeletonLoader type="card" count={3} />
+          </div>
+          {/* Skeleton for tab content */}
+          <div className="bg-gray-800 shadow-lg rounded-lg p-4 sm:p-6 border border-gray-700">
+            <SkeletonLoader type="card" count={1} />
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     // Main container for the user dashboard with styling for background, minimum height, padding, font, and text color
